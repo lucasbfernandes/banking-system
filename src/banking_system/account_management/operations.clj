@@ -6,7 +6,7 @@
 
 (defn wrap-operation
   "Wraps a new operation with the provided account-number, description,
-  amount, date and type. Date must be on the yyyy-mm-dd format."
+  amount, date and type. Date must be a string on the yyyy-mm-dd format."
   [account-number description amount date type]
   {:account-number account-number
    :description description 
@@ -38,7 +38,8 @@
 
 (defn create-operation
   "Inserts a new operation (Credit or Debit) into an account in the accounts
-  map. If the account does not exit or one of the values is nil, return failure."
+  map. If the account does not exit or one of the parameters is invalid, 
+  return failure."
   [accounts-map account-number description amount date type]
   (if (and accounts-map account-number description amount date
            type (@accounts-map account-number))

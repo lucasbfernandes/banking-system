@@ -38,6 +38,7 @@
   [a b]
   (or (date-before? a b) (date-equals? a b)))
 
+; TODO date begin must come before date-end
 (defn is-date-between?
   "Takes three date objects and asserts whether the first one is
   between the other two."
@@ -47,6 +48,7 @@
        (or (date-before? date date-end)
            (date-equals? date date-end))))
 
+; TODO MOVE THIS TO operations.clj - IT DOES NOT BELONG HERE!!!
 (defn operations-comparator
   "Takes two operations as parameters and checks whether the
   first one comes before the second in regards to their date."
@@ -72,14 +74,19 @@
   "Takes a string in the format yyyy-mm-dd and converts it to a
   date object."
   [date-string]
-  (when date-string
-    (time-format/parse (time-format/formatters :date) date-string)))
+  (time-format/parse (time-format/formatters :date) date-string))
 
 (defn date-string
   "Takes a date object and converts it to a human readable string.
   Format: yyyy-mm-dd."
   [date-object]
   (time-format/unparse (time-format/formatters :date) date-object))
+
+(defn get-random-between
+  "Takes two integers as parameters and return a random integer number
+  between both (inclusive)."
+  [begin end]
+  (+ (rand-int (- (inc end) begin)) begin))
 
 (defn get-json-param
   "Returns the value of the specified parameter in the request."
@@ -91,7 +98,7 @@
   []
   {:status true :message messages/MSG_0001})
 
-(defn wrap-success
+(defn wrap-retval-success
   "Wraps retval success with another key/value pair."
   [value value-key]
   (assoc (retval-success) value-key value))

@@ -14,11 +14,11 @@
     (loop [pos 0 balance 0.0]
       (let [operations @(get-operations accounts-map account-number)]
         (if (or (empty? operations) (= pos (count operations)))
-          (fn/wrap-success balance :balance)
+          (fn/wrap-retval-success balance :balance)
           (let [operation (nth operations pos)]
             (if (fn/date-before-equals? (operation :date) max-date)
               (recur (inc pos) (+ balance (get-operation-amount operation)))
-              (fn/wrap-success balance :balance))))))
+              (fn/wrap-retval-success balance :balance))))))
     (fn/retval-failure messages/MSG_0002)))
 
 (defn update-statement-day
@@ -54,7 +54,7 @@
     (loop [pos 0 statement {}]
       (let [operations @(get-operations accounts-map account-number)]
         (if (or (empty? operations) (= pos (count operations)))
-          (fn/wrap-success statement :statement)
+          (fn/wrap-retval-success statement :statement)
           (let [operation (nth operations pos)]
             (if (fn/is-date-between? (operation :date) begin-date end-date)
               (if (contains? statement (fn/date-string (operation :date)))
@@ -63,6 +63,6 @@
                        (-> (create-statement-day accounts-map statement operation)
                            (update-statement-day operation))))
               (if (fn/date-before? end-date (operation :date))
-                (fn/wrap-success statement :statement)
+                (fn/wrap-retval-success statement :statement)
                 (recur (inc pos) statement)))))))
     (fn/retval-failure messages/MSG_0002)))
