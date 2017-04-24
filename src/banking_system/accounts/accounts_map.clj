@@ -132,27 +132,21 @@
 
 (defn get-account-statement
   "Returns the bank statement of a given account between two specified dates."
-  ([accounts-map account-number begin-date end-date]
-    (get-account-statement accounts-map account-number begin-date end-date 0 {}))
-  ([accounts-map account-number begin-date end-date pos statement]
-    (if (and accounts-map account-number begin-date end-date
-    	     pos statement (@accounts-map account-number))
+  [accounts-map account-number begin-date end-date]
+  (if (and accounts-map account-number begin-date
+           end-date (@accounts-map account-number))
+    (loop [pos 0 statement {}]
       (let [operations @(get-operations accounts-map account-number)]
         (if (or (empty? operations) (= pos (count operations)))
-          (assoc (helper/retval-success) :statement statement)
+          (helper/wrap-success statement :statement)
           (let [operation (nth operations pos)]
             (if (helper/is-date-between? (operation :date) begin-date end-date)
               (if (contains? statement (helper/date-string (operation :date)))
-              	(get-account-statement
-              	  accounts-map account-number
-              	  begin-date end-date
-              	  (inc pos) (update-statement-day statement operation))
-                (get-account-statement
-                  accounts-map account-number
-                  begin-date end-date
-                  (inc pos) (update-statement-day (create-statement-day statement operation) operation)))
-              (get-account-statement
-                accounts-map account-number 
-                begin-date end-date
-                (inc pos) statement)))))
-      (helper/retval-failure messages/MSG_0002))))
+                (recur (inc pos) (update-statement-day statement operation))
+                (recur (inc pos) 
+                       (-> (create-statement-day statement operation)
+                           (update-statement-day operation))))
+              (if (helper/date-before? end-date (operation :date))
+                (helper/wrap-success statement :statement)
+                (recur (inc pos) statement)))))))
+    (helper/retval-failure messages/MSG_0002)))

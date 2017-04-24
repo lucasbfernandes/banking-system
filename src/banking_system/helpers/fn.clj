@@ -72,7 +72,8 @@
   "Takes a string in the format yyyy-mm-dd and converts it to a
   date object."
   [date-string]
-  (time-format/parse (time-format/formatters :date) date-string))
+  (when date-string
+    (time-format/parse (time-format/formatters :date) date-string)))
 
 (defn date-string
   "Takes a date object and converts it to a human readable string.
