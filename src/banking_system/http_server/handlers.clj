@@ -13,7 +13,7 @@
     (fn/get-json-param request "email")))
 
 (defn account-operation [request type]
-  (operations/insert-operation
+  (operations/create-operation
     accounts/accounts-map
     (fn/get-json-param request "account-number")
     (fn/get-json-param request "description")
@@ -28,7 +28,7 @@
   (account-operation request constants/debit-string))
 
 (defn account-balance [request]
-  (statements/retrieve-balance
+  (statements/get-account-balance
     accounts/accounts-map
     (fn/get-json-param request "account-number")
     (fn/get-today-date)))

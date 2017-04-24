@@ -5,7 +5,7 @@
     [banking-system.account-management.operations
       :refer [get-operations get-operation-amount]]))
 
-(defn retrieve-balance
+(defn get-account-balance
   "Returns the current balance of an account. The balance is the sum of all
   operations until max-date."
   [accounts-map account-number max-date]
@@ -39,7 +39,7 @@
     (assoc statement date-str
       (assoc {}
         :balance
-        ((retrieve-balance
+        ((get-account-balance
            accounts-map 
            (operation :account-number) 
            (operation :date)) 

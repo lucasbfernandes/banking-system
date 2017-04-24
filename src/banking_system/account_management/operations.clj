@@ -28,7 +28,7 @@
     (+ 0 (operation :amount))
     (- 0 (operation :amount))))
 
-(defn set-operation
+(defn insert-operation
   "Updates atom to hold a new operation."
   [operation accounts-map account-number]
     (swap! 
@@ -36,7 +36,7 @@
       fn/insert-sorted operation
       fn/operations-comparator))
 
-(defn insert-operation
+(defn create-operation
   "Inserts a new operation (Credit or Debit) into an account in the accounts
   map. If the account does not exit or one of the values is nil, return failure."
   [accounts-map account-number description amount date type]
@@ -44,6 +44,6 @@
            type (@accounts-map account-number))
     (do
       (-> (wrap-operation account-number description amount date type)
-          (set-operation accounts-map account-number))
+          (insert-operation accounts-map account-number))
       (fn/retval-success))
     (fn/retval-failure messages/MSG_0002)))
