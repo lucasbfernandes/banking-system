@@ -34,7 +34,7 @@
 
 (defn create-statement-day
   "Creates a statement structure for a given day."
-  [statement operation]
+  [accounts-map statement operation]
   (let [date-str (helper/date-string (operation :date))]
     (assoc statement date-str
       (assoc {}
@@ -60,7 +60,7 @@
               (if (contains? statement (helper/date-string (operation :date)))
                 (recur (inc pos) (update-statement-day statement operation))
                 (recur (inc pos) 
-                       (-> (create-statement-day statement operation)
+                       (-> (create-statement-day accounts-map statement operation)
                            (update-statement-day operation))))
               (if (helper/date-before? end-date (operation :date))
                 (helper/wrap-success statement :statement)
