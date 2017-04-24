@@ -1,12 +1,14 @@
 (ns banking-system.account-management.accounts
   (:require
-    [banking-system.helpers.fn :as helper]
+    [banking-system.helpers.fn :as fn]
     [banking-system.settings.messages :as messages]))
 
 (def accounts-map (atom {}))
 
 (defn wrap-account
-  "Wraps a new account with the provided username and email values"
+  "Wraps a new account with the provided username and email values.
+  Also creates a :operations atom vector that will hold account
+  operations (i.e. Insert and remove money)."
   [username email]
   {:name username
    :email email
@@ -21,26 +23,28 @@
       account-number)))
 
 (defn remove-account
-  "Removes an account from the account map. Returns account number."
+  "Removes an account from the account map and returns the account number."
   [account-number accounts-map]
   (swap! accounts-map
     dissoc account-number)
   account-number)
 
-(defn set-account
-  "Updates atom to hold the new user. Returns account number."
+(defn insert-account
+  "Inserts a new user into the accounts-map atom and returns the account
+  number."
   [account-number accounts-map username email]
   (swap! accounts-map 
     assoc account-number (wrap-account username email))
   account-number)
 
-(defn insert-account
-  "Inserts a new account with the provided username and email values
-  into the accounts-map. If username and/or email are nil, return 
-  failure. Otherwise, return JSON with account number."
+(defn create-account
+  "Creates a new account with the provided username and email values
+  and inserts it into the accounts-map. If username and/or email are 
+  nil, returns a failure map object, i.e. a JSON object. Otherwise, 
+  returns a success JSON object with the account number in it."
   [accounts-map username email]
   (if (and accounts-map username email)
     (-> (generate-account-number accounts-map)
-        (set-account accounts-map username email)
-        (helper/wrap-success :account-number))
-    (helper/retval-failure messages/MSG_0002)))
+        (insert-account accounts-map username email)
+        (fn/wrap-success :account-number))
+    (fn/retval-failure messages/MSG_0002)))

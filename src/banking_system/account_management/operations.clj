@@ -1,16 +1,17 @@
 (ns banking-system.account-management.operations
   (:require
-    [banking-system.helpers.fn :as helper]
+    [banking-system.helpers.fn :as fn]
+    [banking-system.settings.constants :as constants]
     [banking-system.settings.messages :as messages]))
 
 (defn wrap-operation
   "Wraps a new operation with the provided account-number, description,
-  amount, date and type."
+  amount, date and type. Date must be on the yyyy-mm-dd format."
   [account-number description amount date type]
   {:account-number account-number
    :description description 
    :amount amount
-   :date (helper/format-date date)
+   :date (fn/format-date date)
    :type type})
 
 (defn get-operations
@@ -20,10 +21,10 @@
 
 (defn get-operation-amount
   "Takes an operation as parameter and return its amount based on its type.
-  Example: If an operation has an amount of 2000 and is a debit operation,
-  then this function will return -2000."
+  (e.g. If an operation has an amount of 2000 and is a debit operation,
+  then get-operation-amount will return -2000)."
   [operation]
-  (if (= (operation :type) "C")
+  (if (= (operation :type) constants/credit-string)
     (+ 0 (operation :amount))
     (- 0 (operation :amount))))
 
@@ -32,8 +33,8 @@
   [operation accounts-map account-number]
     (swap! 
       (get-operations accounts-map account-number)
-      helper/insert-sorted operation
-      helper/operations-comparator))
+      fn/insert-sorted operation
+      fn/operations-comparator))
 
 (defn insert-operation
   "Inserts a new operation (Credit or Debit) into an account in the accounts
@@ -44,5 +45,5 @@
     (do
       (-> (wrap-operation account-number description amount date type)
           (set-operation accounts-map account-number))
-      (helper/retval-success))
-    (helper/retval-failure messages/MSG_0002)))
+      (fn/retval-success))
+    (fn/retval-failure messages/MSG_0002)))
