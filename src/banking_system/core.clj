@@ -1,8 +1,8 @@
 (ns banking-system.core
   (:require 
-  	[banking-system.settings.constants :as constants]
+    [banking-system.settings.constants :as constants]
     [banking-system.http-server.server :as http-server]
-  	[banking-system.http-server.routes :refer [app-routes]])
+    [banking-system.http-server.routes :refer [app-routes]])
   (:gen-class))
 
 (defn -main
