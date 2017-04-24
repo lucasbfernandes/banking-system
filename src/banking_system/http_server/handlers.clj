@@ -1,7 +1,9 @@
 (ns banking-system.http-server.handlers
   (:require
-  	[banking-system.helpers.fn :as helper]
-    [banking-system.accounts.accounts-map :as accounts]))
+    [banking-system.helpers.fn :as helper]
+    [banking-system.account-management.accounts :as accounts]
+    [banking-system.account-management.operations :as operations]
+    [banking-system.account-management.statements :as statements]))
 
 (defn create-account [request]
   (accounts/insert-account 
@@ -10,8 +12,8 @@
     (helper/get-json-param request "email")))
 
 (defn account-operation [request type]
-  (accounts/insert-operation
-  	accounts/accounts-map
+  (operations/insert-operation
+    accounts/accounts-map
     (helper/get-json-param request "account-number")
     (helper/get-json-param request "description")
     (helper/get-json-param request "amount")
@@ -25,16 +27,16 @@
   (account-operation request "D"))
 
 (defn account-balance [request]
-  (accounts/retrieve-balance
+  (statements/retrieve-balance
     accounts/accounts-map
     (helper/get-json-param request "account-number")
     (helper/get-today-date)))
 
 (defn account-statement [request]
-  (accounts/get-account-statement
+  (statements/get-account-statement
     accounts/accounts-map
     (helper/get-json-param request "account-number")
     (-> (helper/get-json-param request "begin-date")
         (helper/format-date))
     (-> (helper/get-json-param request "end-date")
-    	(helper/format-date))))    
+        (helper/format-date))))    
