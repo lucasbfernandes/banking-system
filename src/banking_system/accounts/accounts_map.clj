@@ -92,22 +92,18 @@
 (defn retrieve-balance
   "Returns the current balance of an account. The balance is the sum of all
   operations until max-date."
-  ([accounts-map account-number max-date]
-    (retrieve-balance accounts-map account-number max-date 0 0.0))
-  ([accounts-map account-number max-date pos balance]
-    (if (and accounts-map account-number max-date
-             pos balance (@accounts-map account-number))
+  [accounts-map account-number max-date]
+  (if (and accounts-map account-number max-date
+           (@accounts-map account-number))
+    (loop [pos 0 balance 0.0]
       (let [operations @(get-operations accounts-map account-number)]
         (if (or (empty? operations) (= pos (count operations)))
           (helper/wrap-success balance :balance)
           (let [operation (nth operations pos)]
             (if (helper/date-before-equals? (operation :date) max-date)
-              (retrieve-balance
-                accounts-map account-number
-                max-date (inc pos)
-                (+ balance (get-operation-amount operation)))
-              (helper/wrap-success balance :balance)))))
-      (helper/retval-failure messages/MSG_0002))))
+              (recur (inc pos) (+ balance (get-operation-amount operation)))
+              (helper/wrap-success balance :balance))))))
+    (helper/retval-failure messages/MSG_0002)))
 
 (defn update-statement-day
   "Adds one operation to a statement day."
