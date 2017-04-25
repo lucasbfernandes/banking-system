@@ -2,6 +2,7 @@
   (:require
     [clojure.test :refer :all]
     [banking-system.helpers.fn :refer :all]
+    [banking-system.settings.constants :refer :all]
     [banking-system.account-management.operations :refer :all]
     [banking-system.account-management.accounts :refer :all]
     [banking-system.account-management.statements :refer :all]))
@@ -66,16 +67,89 @@
                      {}
                      (wrap-operation 123456 "teste" 200 "2017-03-04" "D")) 
                    "2017-03-04")))
-  (testing "output - date must have a map with balance key with value 0.0"
+  (testing "output - day must have a map where balance has value 0.0"
     (is (= (((create-day-statement 
                (atom {123456 (wrap-account "teste" "teste")}) {} (wrap-operation 123456 "teste" 200 "2017-03-04" "D"))
              "2017-03-04")
              :balance) 0.0)))
-  (testing "output - date must have a map with empty operations vector"
+  (testing "output - day must have a map with an empty operations vector"
     (is (= (((create-day-statement 
                (atom {123456 (wrap-account "teste" "teste")}) {} (wrap-operation 123456 "teste" 200 "2017-03-04" "D"))
              "2017-03-04")
              :operations) []))))
+
+(deftest add-operation-day-statement-test
+  (testing "illegal date string arguments"
+    (is (thrown? Exception (add-operation-day-statement "2017-03-03" "2017-03-03"))))
+  (testing "illegal number arguments"
+    (is (thrown? Exception (add-operation-day-statement 2017.2 2017))))
+  (testing "illegal regular string parameters"
+    (is (thrown? Exception (add-operation-day-statement "ABCD" "ABCD"))))
+  (testing "illegal arguments - statements-map must be a map"
+    (is (thrown? Exception (add-operation-day-statement [] {}))))
+  (testing "illegal arguments - statements-map must be a map"
+    (is (thrown? Exception (add-operation-day-statement 12 {}))))
+  (testing "illegal arguments - operation must be a map"
+    (is (thrown? Exception (add-operation-day-statement {} []))))
+  (testing "illegal arguments - operation must be a map"
+    (is (thrown? Exception (add-operation-day-statement {} 12))))
+  (testing "output - day operations must have a map with the new description value"
+    (is (= (let [op (wrap-operation 123456 "description" 2000 "2017-02-03" "D")
+                 ds (create-day-statement
+                      (atom {123456 (wrap-account "acc" "email")})
+                      {}
+                      op)]
+             ((nth (get-in (add-operation-day-statement ds op) ["2017-02-03" :operations]) 0) :description))
+           "description")))
+  (testing "output - day operations must have a map with the new amount value"
+    (is (= (let [op (wrap-operation 123456 "description" 2000 "2017-02-03" "D")
+                 ds (create-day-statement
+                      (atom {123456 (wrap-account "acc" "email")})
+                      {}
+                      op)]
+             ((nth (get-in (add-operation-day-statement ds op) ["2017-02-03" :operations]) 0) :amount))
+           2000)))
+  (testing "output - day operations must have a map with the new type value"
+    (is (= (let [op (wrap-operation 123456 "description" 2000 "2017-02-03" "D")
+                 ds (create-day-statement
+                      (atom {123456 (wrap-account "acc" "email")})
+                      {}
+                      op)]
+             ((nth (get-in (add-operation-day-statement ds op) ["2017-02-03" :operations]) 0) :type))
+           "D"))))
+
+(deftest get-account-statement-test
+  (testing "illegal nil arguments"
+    (is (false? ((get-account-statement nil nil nil nil) :status))))
+  (testing "illegal date string arguments"
+    (is (false? ((get-account-statement "2017-02-03" "2017-03-03" "2017-03-03" "2017-03-03") :status))))
+  (testing "illegal number arguments"
+    (is (false? ((get-account-statement 2017.2 2017 2000 2000) :status))))
+  (testing "illegal regular string parameters"
+    (is (false? ((get-account-statement "ABCD" "ABCD" "DCBA" "DCBA") :status))))
+  (testing "illegal arguments - accounts-map must be a map atom"
+    (is (false? ((get-account-statement "ABCD" 123445 "2017-03-04" "2017-03-10") :status))))
+  (testing "illegal arguments - accounts-map must be a map atom"
+    (is (false? ((get-account-statement {} 123445 "2017-03-04" "2017-03-10") :status))))
+  (testing "illegal arguments - account-number must be an integer"
+    (is (false? ((get-account-statement (atom {"ABCD" {}}) "ABCD" "2017-03-04" "2017-03-10") :status))))
+  (testing "illegal arguments - begin-date must be a date-string"
+    (is (false? ((get-account-statement
+                   (atom {123456 (wrap-account "a" "a")}) 123456 "5000-50-04" "2017-03-10") :status))))
+  (testing "illegal arguments - end-date must be a date-string"
+    (is (false? ((get-account-statement
+                   (atom {123456 (wrap-account "a" "a")}) 123456 "2017-03-04" (format-date "2017-03-10")) :status))))
+  (testing "output - day statement must have the correct number of operations"
+    (is (= (let [acc-map (generate-dummy-accounts-map 123456 100 10 "D")
+                 st-map (get-account-statement acc-map 123456 dummy-date (date-string (get-today-date)))]
+             (count ((get-in st-map [:statement dummy-date]) :operations))) 100)))
+  (testing "output - day statement must have the correct balance"
+    (is (= (let [acc-map (generate-dummy-accounts-map 123456 100 10 "D")
+                 st-map (get-account-statement acc-map 123456 dummy-date (date-string (get-today-date)))]
+             (count ((get-in st-map [:statement dummy-date]) :balance))) -1000.0))))
+
+
+
 
 
 
