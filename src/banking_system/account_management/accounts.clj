@@ -41,6 +41,8 @@
     assoc account-number (wrap-account username email))
   account-number)
 
+; TODO username and email MUST be strings
+; TODO accounts-map MUST be a MAP atom
 (defn create-account
   "Creates a new account with the provided username and email values
   and inserts it into the accounts-map. If username and/or email are 
