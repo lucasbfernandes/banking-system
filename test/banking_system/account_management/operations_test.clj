@@ -66,7 +66,7 @@
     (is (thrown? Exception (insert-operation (wrap-operation 123 "a" 20 "2017-03-04" "D") {} 123456))))
   (testing "operation is now inside the map atom"
     (is (false? (empty? @((@(insert-operation (wrap-operation 123234 "a" 20 "2017-03-04" "D")
-                                              (atom {123234 (wrap-account "test" "test")})
+                                              (atom {123234 (wrap-account "test" "test@test.com")})
                                               123234) 123234) :operations))))))
 
 (deftest create-operation-test
@@ -89,6 +89,6 @@
   (testing "illegal arguments - type should be a string"
     (is (false? ((create-operation (atom {}) 123456 "test" 2000 "2017-02-03" 22) :status))))
   (testing "illegal arguments - atom must have account number"
-    (is (false? ((create-operation (atom {234506 (wrap-account "test" "test")}) 123456 "test" 2000 "2017-02-03" "D") :status))))
+    (is (false? ((create-operation (atom {234506 (wrap-account "test" "test@test.com")}) 123456 "test" 2000 "2017-02-03" "D") :status))))
   (testing "operation is created"
-    (is (true? ((create-operation (atom {123456 (wrap-account "test" "test")}) 123456 "test" 3000 "2017-03-03" "D") :status)))))
+    (is (true? ((create-operation (atom {123456 (wrap-account "test" "test@test.com")}) 123456 "test" 3000 "2017-03-03" "D") :status)))))

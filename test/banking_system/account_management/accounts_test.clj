@@ -37,10 +37,12 @@
     (is (thrown? Exception (remove-account "ABCD" "ABCD"))))
   (testing "illegal combination of number/map atom"
     (is (thrown? Exception (remove-account (atom {}) 123456))))
-  (testing "illegal arguments - account number should be a integer"
+  (testing "illegal arguments - account number should be a integer string"
     (is (thrown? Exception (remove-account "2017-03-03" (atom {})))))
+  (testing "illegal arguments - accounts map should be an atom map"
+    (is (thrown? Exception (remove-account "20170303" (atom [])))))
   (testing "account number is not in the atom anymore"
-    (is (false? (contains? @(remove-account 123456 (atom {123456 {}})) 123456)))))
+    (is (false? (contains? @(remove-account "123456" (atom {"123456" {}})) "123456")))))
 
 (deftest insert-account-test
   (testing "illegal date string arguments"
@@ -50,13 +52,13 @@
   (testing "illegal regular string parameters"
     (is (thrown? Exception (insert-account "ABCD" "ABCD" "ABCD" "ABCD"))))
   (testing "illegal arguments - username should be a string"
-    (is (thrown? Exception (insert-account 123455 (atom {}) 134456 "test"))))
-  (testing "illegal arguments - email should be a string"
-    (is (thrown? Exception (insert-account 123455 (atom {}) "testname" 12.2))))
-  (testing "illegal arguments - account number should be a integer"
-    (is (thrown? Exception (insert-account "2017-03-03" (atom {}) "test" "testemail"))))
+    (is (thrown? Exception (insert-account "123455" (atom {}) 134456 "test"))))
+  (testing "illegal arguments - email should be a email string"
+    (is (thrown? Exception (insert-account "123455" (atom {}) "testname" 12.2))))
+  (testing "illegal arguments - account number should be a integer string"
+    (is (thrown? Exception (insert-account "2017-03-03" (atom {}) "test" "testemail@b.c"))))
   (testing "account number is now inside the map atom"
-    (is (true? (contains? @(insert-account 123456 (atom {}) "test" "test@test.com") 123456)))))
+    (is (true? (contains? @(insert-account "123456" (atom {}) "test" "test@test.com") "123456")))))
 
 (deftest create-account-test
   (testing "illegal nil arguments"
@@ -68,10 +70,10 @@
   (testing "illegal regular string parameters"
     (is (false? ((create-account "ABCD" "ABCD" "DCBA") :status))))
   (testing "illegal arguments - username should be a string"
-    (is (false? ((create-account (atom {}) 134456 "test") :status))))
+    (is (false? ((create-account (atom {}) 1413 "test@c.c") :status))))
   (testing "illegal arguments - email should be a string"
     (is (false? ((create-account (atom {}) "testname" 12.2) :status))))
   (testing "illegal arguments - accounts-map should be an atom"
-    (is (false? ((create-account {} "testname" "testemail") :status))))
+    (is (false? ((create-account {} "testname" "testemail@c.b") :status))))
   (testing "account is created"
-    (is (true? ((create-account (atom {}) "name" "email") :status)))))
+    (is (true? ((create-account (atom {}) "name" "email@email.com") :status)))))

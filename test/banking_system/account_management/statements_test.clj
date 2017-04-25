@@ -23,27 +23,27 @@
   (testing "illegal arguments - account-number must be an integer"
     (is (false? ((get-account-balance (atom {"ABCD" {}}) "ABCD" "2017-03-04") :status))))
   (testing "illegal arguments - max-date must be a date string"
-    (is (false? ((get-account-balance (atom {123456 {}}) 123456 (format-date "2017-03-04")) :status))))
+    (is (false? ((get-account-balance (atom {"123456" {}}) "123456" (format-date "2017-03-04")) :status))))
   (testing "illegal arguments - accounts-map must have account-number as a key"
-    (is (false? ((get-account-balance (atom {123456 {}}) 654321 (date-string (get-today-date))) :status))))
+    (is (false? ((get-account-balance (atom {"123456" {}}) "654321" (date-string (get-today-date))) :status))))
   (testing "no operation correct balance debit"
     (is (= ((get-account-balance 
-              (generate-dummy-accounts-map 123456 0 10 "D") 123456 (date-string (get-today-date))) :balance) 0.0)))
+              (generate-dummy-accounts-map "123456" 0 10 "D") "123456" (date-string (get-today-date))) :balance) 0.0)))
   (testing "one operation correct balance debit"
     (is (= ((get-account-balance
-              (generate-dummy-accounts-map 123456 1 10 "D") 123456 (date-string (get-today-date))) :balance) -10.0)))
+              (generate-dummy-accounts-map "123456" 1 10 "D") "123456" (date-string (get-today-date))) :balance) -10.0)))
   (testing "two operations correct balance debit"
     (is (= ((get-account-balance
-              (generate-dummy-accounts-map 123456 2 45 "D") 123456 (date-string (get-today-date))) :balance) -90.0)))
+              (generate-dummy-accounts-map "123456" 2 45 "D") "123456" (date-string (get-today-date))) :balance) -90.0)))
   (testing "no operation correct balance credit"
     (is (= ((get-account-balance 
-              (generate-dummy-accounts-map 123456 0 10 "C") 123456 (date-string (get-today-date))) :balance) 0.0)))
+              (generate-dummy-accounts-map "123456" 0 10 "C") "123456" (date-string (get-today-date))) :balance) 0.0)))
   (testing "one operation correct balance credit"
     (is (= ((get-account-balance
-              (generate-dummy-accounts-map 123456 1 10.5 "C") 123456 (date-string (get-today-date))) :balance) 10.5)))
+              (generate-dummy-accounts-map "123456" 1 10.5 "C") "123456" (date-string (get-today-date))) :balance) 10.5)))
   (testing "two operations correct balance credit"
     (is (= ((get-account-balance
-              (generate-dummy-accounts-map 123456 2 45.2 "C") 123456 (date-string (get-today-date))) :balance) 90.4))))
+              (generate-dummy-accounts-map "123456" 2 45.2 "C") "123456" (date-string (get-today-date))) :balance) 90.4))))
 
 ; accounts-map statements-map operation
 (deftest create-day-statement-test
@@ -63,18 +63,18 @@
     (is (thrown? Exception (create-day-statement (atom {}) {} []))))
   (testing "output - must have the right date, i.e. the operation date"
     (is (contains? (create-day-statement 
-                     (atom {123456 (wrap-account "teste" "teste")})
+                     (atom {123456 (wrap-account "teste" "teste@teste.com")})
                      {}
                      (wrap-operation 123456 "teste" 200 "2017-03-04" "D")) 
                    "2017-03-04")))
   (testing "output - day must have a map where balance has value 0.0"
     (is (= (((create-day-statement 
-               (atom {123456 (wrap-account "teste" "teste")}) {} (wrap-operation 123456 "teste" 200 "2017-03-04" "D"))
+               (atom {123456 (wrap-account "teste" "teste@teste.com")}) {} (wrap-operation 123456 "teste" 200 "2017-03-04" "D"))
              "2017-03-04")
              :balance) 0.0)))
   (testing "output - day must have a map with an empty operations vector"
     (is (= (((create-day-statement 
-               (atom {123456 (wrap-account "teste" "teste")}) {} (wrap-operation 123456 "teste" 200 "2017-03-04" "D"))
+               (atom {123456 (wrap-account "teste" "teste@teste.com")}) {} (wrap-operation 123456 "teste" 200 "2017-03-04" "D"))
              "2017-03-04")
              :operations) []))))
 
@@ -96,7 +96,7 @@
   (testing "output - day operations must have a map with the new description value"
     (is (= (let [op (wrap-operation 123456 "description" 2000 "2017-02-03" "D")
                  ds (create-day-statement
-                      (atom {123456 (wrap-account "acc" "email")})
+                      (atom {123456 (wrap-account "acc" "email@email.com")})
                       {}
                       op)]
              ((nth (get-in (add-operation-day-statement ds op) ["2017-02-03" :operations]) 0) :description))
@@ -104,7 +104,7 @@
   (testing "output - day operations must have a map with the new amount value"
     (is (= (let [op (wrap-operation 123456 "description" 2000 "2017-02-03" "D")
                  ds (create-day-statement
-                      (atom {123456 (wrap-account "acc" "email")})
+                      (atom {123456 (wrap-account "acc" "email@email.com")})
                       {}
                       op)]
              ((nth (get-in (add-operation-day-statement ds op) ["2017-02-03" :operations]) 0) :amount))
@@ -112,7 +112,7 @@
   (testing "output - day operations must have a map with the new type value"
     (is (= (let [op (wrap-operation 123456 "description" 2000 "2017-02-03" "D")
                  ds (create-day-statement
-                      (atom {123456 (wrap-account "acc" "email")})
+                      (atom {123456 (wrap-account "acc" "email@email.com")})
                       {}
                       op)]
              ((nth (get-in (add-operation-day-statement ds op) ["2017-02-03" :operations]) 0) :type))
@@ -128,24 +128,24 @@
   (testing "illegal regular string parameters"
     (is (false? ((get-account-statement "ABCD" "ABCD" "DCBA" "DCBA") :status))))
   (testing "illegal arguments - accounts-map must be a map atom"
-    (is (false? ((get-account-statement "ABCD" 123445 "2017-03-04" "2017-03-10") :status))))
+    (is (false? ((get-account-statement "ABCD" "123445" "2017-03-04" "2017-03-10") :status))))
   (testing "illegal arguments - accounts-map must be a map atom"
-    (is (false? ((get-account-statement {} 123445 "2017-03-04" "2017-03-10") :status))))
+    (is (false? ((get-account-statement {} "123445" "2017-03-04" "2017-03-10") :status))))
   (testing "illegal arguments - account-number must be an integer"
     (is (false? ((get-account-statement (atom {"ABCD" {}}) "ABCD" "2017-03-04" "2017-03-10") :status))))
   (testing "illegal arguments - begin-date must be a date-string"
     (is (false? ((get-account-statement
-                   (atom {123456 (wrap-account "a" "a")}) 123456 "5000-50-04" "2017-03-10") :status))))
+                   (atom {"123456" (wrap-account "a" "a@a.com")}) "123456" "5000-50-04" "2017-03-10") :status))))
   (testing "illegal arguments - end-date must be a date-string"
     (is (false? ((get-account-statement
-                   (atom {123456 (wrap-account "a" "a")}) 123456 "2017-03-04" (format-date "2017-03-10")) :status))))
+                   (atom {"123456" (wrap-account "a" "a@a.com")}) "123456" "2017-03-04" (format-date "2017-03-10")) :status))))
   (testing "output - day statement must have the correct number of operations"
-    (is (= (let [acc-map (generate-dummy-accounts-map 123456 100 10 "D")
-                 st-map (get-account-statement acc-map 123456 dummy-date (date-string (get-today-date)))]
+    (is (= (let [acc-map (generate-dummy-accounts-map "123456" 100 10 "D")
+                 st-map (get-account-statement acc-map "123456" dummy-date (date-string (get-today-date)))]
              (count ((get-in st-map [:statement dummy-date]) :operations))) 100)))
   (testing "output - day statement must have the correct balance"
-    (is (= (let [acc-map (generate-dummy-accounts-map 123456 100 10 "D")
-                 st-map (get-account-statement acc-map 123456 dummy-date (date-string (get-today-date)))]
+    (is (= (let [acc-map (generate-dummy-accounts-map "123456" 100 10 "D")
+                 st-map (get-account-statement acc-map "123456" dummy-date (date-string (get-today-date)))]
              (count ((get-in st-map [:statement dummy-date]) :balance))) -1000.0))))
 
 
