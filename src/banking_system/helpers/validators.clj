@@ -9,6 +9,14 @@
     true
     (throw (Exception. (str elem " is not a integer.")))))
 
+(defn is-number?
+  "Checks whether elem is a number (i.e. integer or float). If yes, return true,
+  if not, throw Exception."
+  [elem]
+  (if (or (integer? elem) (float? elem))
+    true
+    (throw (Exception. (str elem " is not a number.")))))
+
 (defn is-string?
   "Checks whether elem is a string. If yes, return true, if not, throw Exception."
   [elem]
