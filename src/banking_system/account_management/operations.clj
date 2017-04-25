@@ -38,6 +38,7 @@
       fn/operations-comparator)
     accounts-map)
 
+; TODO account-number -> integer description -> string amount -> float date -> string type -> string
 (defn create-operation
   "Inserts a new operation (Credit or Debit) into an account in the accounts
   map. If the account does not exit or one of the parameters is invalid, 

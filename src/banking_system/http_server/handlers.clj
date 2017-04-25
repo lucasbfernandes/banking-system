@@ -27,6 +27,7 @@
 (defn account-debit [request]
   (account-operation request constants/debit-string))
 
+; TODO must pass date string to get-account-balance
 (defn account-balance [request]
   (statements/get-account-balance
     accounts/accounts-map
