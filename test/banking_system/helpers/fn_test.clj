@@ -113,14 +113,39 @@
   (testing "illegal regular string parameters"
     (is (thrown? Exception (date-string "ABCD"))))
   (testing "valid arguments valid assertion"
-  	(is (= (date-string (format-date "2017-03-03")) "2017-03-03"))))
+    (is (= (date-string (format-date "2017-03-03")) "2017-03-03"))))
 
-(deftest date-string-test
+(deftest get-random-between-test
   (testing "illegal date string arguments"
-    (is (thrown? Exception (date-string "2017-02-03"))))
+    (is (thrown? Exception (get-random-between "2017-02-03" "2000-02-03"))))
   (testing "illegal number arguments"
-    (is (thrown? Exception (date-string 2017.2))))
+    (is (thrown? Exception (get-random-between 2017.2 2008003.002))))
   (testing "illegal regular string parameters"
-    (is (thrown? Exception (date-string "ABCD"))))
+    (is (thrown? Exception (get-random-between "ABCD" "aaa"))))
+  (testing "begin must be less than end"
+    (is (thrown? Exception (get-random-between 2000 1000))))
   (testing "valid arguments valid assertion"
-  	(is (= (date-string (format-date "2017-03-03")) "2017-03-03"))))
+    (is (every? true? 
+          (map (fn [x] (let [random (get-random-between 0 10)]
+                         (and (<= random 10) (>= random 0)))) 
+               (range 10000))))))
+
+(deftest get-json-param-test
+  (testing "illegal date string arguments"
+    (is (thrown? Exception (get-json-param "2017-02-03"))))
+  (testing "illegal number arguments"
+    (is (thrown? Exception (get-json-param 2017.2))))
+  (testing "illegal regular string parameters"
+    (is (thrown? Exception (get-json-param "ABCD"))))
+  (testing "valid parameter nil assertion"
+    (is (nil? (get-json-param {} :a))))
+  (testing "valid arguments valid assertion"
+    (is (= (get-json-param {:body {:a 2}} :a) 2))))
+
+(deftest wrap-retval-success-test
+  (testing "map contains key/val pair"
+    (is (= ((wrap-retval-success "2010-02-03" :date) :date) "2010-02-03"))))
+
+(deftest retval-failure-test
+  (testing "map contains correct :message"
+    (is (= ((retval-failure "my message") :message) "my message"))))

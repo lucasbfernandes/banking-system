@@ -82,6 +82,7 @@
   [date-object]
   (time-format/unparse (time-format/formatters :date) date-object))
 
+; TODO begin must come before end and parameters must be of INTEGER TYPE
 (defn get-random-between
   "Takes two integers as parameters and return a random integer number
   between both (inclusive)."
