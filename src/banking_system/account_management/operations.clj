@@ -28,13 +28,15 @@
     (+ 0 (operation :amount))
     (- 0 (operation :amount))))
 
+; TODO should return accounts map
 (defn insert-operation
   "Updates atom to hold a new operation."
   [operation accounts-map account-number]
     (swap! 
       (get-operations accounts-map account-number)
       fn/insert-sorted operation
-      fn/operations-comparator))
+      fn/operations-comparator)
+    accounts-map)
 
 (defn create-operation
   "Inserts a new operation (Credit or Debit) into an account in the accounts
