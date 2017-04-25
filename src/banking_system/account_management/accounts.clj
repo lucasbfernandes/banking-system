@@ -1,6 +1,8 @@
 (ns banking-system.account-management.accounts
   (:require
     [banking-system.helpers.fn :as fn]
+    [banking-system.account-management.operations :as operations]
+    [banking-system.settings.constants :as constants]
     [banking-system.settings.messages :as messages]))
 
 (def accounts-map (atom {}))
@@ -21,6 +23,27 @@
     (if (contains? @accounts-map account-number)
       (generate-account-number accounts-map)
       account-number)))
+
+(defn generate-dummy-accounts-map
+ "Generates an account map that contains one account with the specified account-number.
+ Also generates a number of operations in the account. There will be <length> operations of
+ type <type> and amount <amount>."
+ [account-number length amount type]
+ (let [dummy-map (atom {account-number (wrap-account constants/dummy-username constants/dummy-email)})]
+   (loop [pos 0]
+     (if (= pos length)
+       dummy-map
+       (do 
+         (operations/insert-operation
+           (operations/wrap-operation 
+             account-number
+             constants/dummy-description
+             amount
+             constants/dummy-date
+             type)
+           dummy-map
+           account-number)
+         (recur (inc pos)))))))
 
 ; TODO should return ACCOUNTS-MAP and not account-number
 ; TODO should not accept string as account-number

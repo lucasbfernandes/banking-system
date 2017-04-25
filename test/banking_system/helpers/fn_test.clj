@@ -128,6 +128,8 @@
     (is (= (type (format-date "2017-02-03")) org.joda.time.DateTime))))
 
 (deftest date-string-test
+  (testing "illegal nil arguments",
+    (is (thrown? Exception (date-string nil))))
   (testing "illegal date string arguments"
     (is (thrown? Exception (date-string "2017-02-03"))))
   (testing "illegal number arguments"

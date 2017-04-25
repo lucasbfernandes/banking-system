@@ -5,6 +5,9 @@
     [banking-system.account-management.operations
       :refer [get-operations get-operation-amount]]))
 
+; TODO accounts-map must be of type atom map
+; account-number must be an integer
+; max-date must be a DATE-STRING!!! Change method
 (defn get-account-balance
   "Returns the current balance of an account. The balance is the sum of all
   operations until max-date."
@@ -21,22 +24,11 @@
               (fn/wrap-retval-success balance :balance))))))
     (fn/retval-failure messages/MSG_0002)))
 
-(defn update-statement-day
-  "Adds one operation to a statement day."
-  [statement operation]
-  (let [date-str (fn/date-string (operation :date))]
-    (assoc statement date-str
-      (assoc (statement date-str) :operations
-        (conj ((statement date-str) :operations)
-          {:description (operation :description)
-           :amount (operation :amount)
-           :type (operation :type)})))))
-
-(defn create-statement-day
+(defn create-day-statement
   "Creates a statement structure for a given day."
-  [accounts-map statement operation]
+  [accounts-map statements-map operation]
   (let [date-str (fn/date-string (operation :date))]
-    (assoc statement date-str
+    (assoc statements-map date-str
       (assoc {}
         :balance
         ((get-account-balance
@@ -46,23 +38,34 @@
          :balance)
         :operations []))))
 
+(defn add-operation-day-statement
+  "Adds one operation to a statement day."
+  [statements-map operation]
+  (let [date-str (fn/date-string (operation :date))]
+    (assoc statements-map date-str
+      (assoc (statements-map date-str) :operations
+        (conj ((statements-map date-str) :operations)
+          {:description (operation :description)
+           :amount (operation :amount)
+           :type (operation :type)})))))
+
 (defn get-account-statement
   "Returns the bank statement of a given account between two specified dates."
   [accounts-map account-number begin-date end-date]
   (if (and accounts-map account-number begin-date
            end-date (@accounts-map account-number))
-    (loop [pos 0 statement {}]
+    (loop [pos 0 statements-map {}]
       (let [operations @(get-operations accounts-map account-number)]
         (if (or (empty? operations) (= pos (count operations)))
-          (fn/wrap-retval-success statement :statement)
+          (fn/wrap-retval-success statements-map :statement)
           (let [operation (nth operations pos)]
             (if (fn/is-date-between? (operation :date) begin-date end-date)
-              (if (contains? statement (fn/date-string (operation :date)))
-                (recur (inc pos) (update-statement-day statement operation))
+              (if (contains? statements-map (fn/date-string (operation :date)))
+                (recur (inc pos) (add-operation-day-statement statements-map operation))
                 (recur (inc pos) 
-                       (-> (create-statement-day accounts-map statement operation)
-                           (update-statement-day operation))))
+                       (-> (create-day-statement accounts-map statements-map operation)
+                           (add-operation-day-statement operation))))
               (if (fn/date-before? end-date (operation :date))
-                (fn/wrap-retval-success statement :statement)
-                (recur (inc pos) statement)))))))
+                (fn/wrap-retval-success statements-map :statement)
+                (recur (inc pos) statements-map)))))))
     (fn/retval-failure messages/MSG_0002)))
