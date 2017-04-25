@@ -4,6 +4,7 @@
     [clj-time.core :as time]
     [banking-system.settings.messages :as messages]))
 
+; TODO throw exception if compar is not a function
 (defn insert-sorted
   "Takes a vector as parameter and inserts the element in a
   position that satisfies the comparator function order.

@@ -37,7 +37,5 @@
   (statements/get-account-statement
     accounts/accounts-map
     (fn/get-json-param request "account-number")
-    (-> (fn/get-json-param request "begin-date")
-        (fn/format-date))
-    (-> (fn/get-json-param request "end-date")
-        (fn/format-date))))    
+    (fn/get-json-param request "begin-date")
+    (fn/get-json-param request "end-date")))    

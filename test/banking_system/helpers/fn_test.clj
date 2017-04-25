@@ -3,6 +3,28 @@
     [clojure.test :refer :all]
     [banking-system.helpers.fn :refer :all]))
 
+(deftest insert-sorted-test
+  (testing "illegal date string arguments"
+    (is (thrown? Exception (insert-sorted [] "2034-03-20" "2030-04-01"))))
+  (testing "illegal number arguments"
+    (is (thrown? Exception (insert-sorted [] 2000 20))))
+  (testing "illegal regular string parameters"
+    (is (thrown? Exception (insert-sorted [] "aaa" "ccc"))))
+  (testing "illegal non vector argument"
+    (is (thrown? Exception (insert-sorted "aaa" "ABCD" 2000))))
+  (testing "insert in emtpy vector"
+    (is (= (nth (insert-sorted [] 1 <) 0) 1)))
+  (testing "insert in the first position"
+    (is (= (nth (insert-sorted [0] 1 >) 0) 1)))
+  (testing "insert in the last position"
+    (is (= (nth (insert-sorted [2] 1 >) 1) 1)))
+  (testing "insert in the middle"
+    (is (= (nth (insert-sorted [1 2 6 7] 5 <) 2) 5)))
+  (testing "insert with custom function"
+    (is (= (nth (insert-sorted [(format-date "2017-02-03") (format-date "2017-03-04")] 
+    	                       (format-date "2017-02-04") date-before?) 1) 
+           (format-date "2017-02-04")))))
+
 (deftest date-equals-test
   (testing "illegal date string arguments"
     (is (thrown? Exception (date-equals? "2017-03-03" "2017-03-03"))))

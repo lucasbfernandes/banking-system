@@ -22,6 +22,8 @@
       (generate-account-number accounts-map)
       account-number)))
 
+; TODO should return ACCOUNTS-MAP and not account-number
+; TODO should not accept string as account-number
 (defn remove-account
   "Removes an account from the account map and returns the account number."
   [account-number accounts-map]
@@ -29,6 +31,8 @@
     dissoc account-number)
   account-number)
 
+; TODO should return ACCOUNTS-MAP and not account-number
+; TODO should not accept string as account-number
 (defn insert-account
   "Inserts a new user into the accounts-map atom and returns the account
   number."
