@@ -120,7 +120,7 @@
   (is-map? debt-period)
   (conj debt-vector debt-period))
 
-(defn get-periods-of-debt
+(defn get-debt-periods
  "Returns a map with all periods of time that the account had a negative balance."
  [accounts-map account-number begin-date end-date]
  (try

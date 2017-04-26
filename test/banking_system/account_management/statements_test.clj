@@ -147,14 +147,41 @@
                  st-map (get-account-statement acc-map "123456" dummy-date (date-string (get-today-date)))]
              ((get-in st-map [:statement dummy-date]) :balance)) -1000.0))))
 
-
-
-
-
-
-
-
-
-
-
-
+(deftest get-debt-periods-test
+  (testing "illegal nil arguments"
+    (is (false? ((get-account-statement nil nil nil nil) :status))))
+  (testing "illegal date string arguments"
+    (is (false? ((get-account-statement "2017-02-03" "2017-03-03" "2017-03-03" "2017-03-03") :status))))
+  (testing "illegal number arguments"
+    (is (false? ((get-account-statement 2017.2 2017 2000 2000) :status))))
+  (testing "illegal regular string parameters"
+    (is (false? ((get-account-statement "ABCD" "ABCD" "DCBA" "DCBA") :status))))
+  (testing "illegal arguments - accounts-map must be a map atom"
+    (is (false? ((get-account-statement "ABCD" "123445" "2017-03-04" "2017-03-10") :status))))
+  (testing "illegal arguments - accounts-map must be a map atom"
+    (is (false? ((get-account-statement {} "123445" "2017-03-04" "2017-03-10") :status))))
+  (testing "illegal arguments - account-number must be an integer"
+    (is (false? ((get-account-statement (atom {"ABCD" {}}) "ABCD" "2017-03-04" "2017-03-10") :status))))
+  (testing "illegal arguments - begin-date must be a date-string"
+    (is (false? ((get-account-statement
+                   (atom {"123456" (wrap-account "a" "a@a.com")}) "123456" "11000-50-04" "2017-03-10") :status))))
+  (testing "illegal arguments - end-date must be a date-string"
+    (is (false? ((get-account-statement
+                   (atom {"123456" (wrap-account "a" "a@a.com")}) "123456" "2017-03-04" (format-date "2017-03-10")) :status))))
+  (testing "two operations - one debit one credit - correct interval"
+    (is (nil? ((nth ((get-debt-periods 
+                       (insert-operation (wrap-operation "123456" "a" 20 "2017-01-01" "D") 
+                                         (atom {"123456" (wrap-account "a" "a@b.c")}) "123456")
+                       "123456"
+                       "2016-02-02"
+                       "2017-01-02") :debt-periods) 0) :end))))
+  (testing "only one credit operation -> no debt periods"
+    (is (let [debt-period (nth ((get-debt-periods 
+                                  (insert-operation (wrap-operation "123456" "a" 20 "2017-01-01" "D")
+                                                    (insert-operation (wrap-operation "123456" "a" 20 "2017-01-05" "C") 
+                                                                      (atom {"123456" (wrap-account "a" "a@b.c")}) "123456")
+                                                    "123456")
+                                  "123456"
+                                  "2016-02-02"
+                                  "2017-01-06") :debt-periods) 0)]
+          (and (= (debt-period :start) "2017-01-01") (= (debt-period :end) "2017-01-04"))))))

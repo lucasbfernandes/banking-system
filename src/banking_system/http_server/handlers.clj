@@ -9,16 +9,16 @@
 (defn create-account [request]
   (accounts/create-account 
     accounts/accounts-map 
-    (fn/get-json-param request "name") 
-    (fn/get-json-param request "email")))
+    (fn/get-json-param request constants/name-param) 
+    (fn/get-json-param request constants/email-param)))
 
 (defn account-operation [request type]
   (operations/create-operation
     accounts/accounts-map
-    (fn/get-json-param request "account-number")
-    (fn/get-json-param request "description")
-    (fn/get-json-param request "amount")
-    (fn/get-json-param request "date")
+    (fn/get-json-param request constants/account-number-param)
+    (fn/get-json-param request constants/description-param)
+    (fn/get-json-param request constants/amount-param)
+    (fn/get-json-param request constants/date-param)
     type))
 
 (defn account-credit [request]
@@ -30,12 +30,12 @@
 (defn account-balance [request]
   (statements/get-account-balance
     accounts/accounts-map
-    (fn/get-json-param request "account-number")
+    (fn/get-json-param request constants/account-number-param)
     (fn/date-string (fn/get-today-date))))
 
 (defn account-statement [request]
   (statements/get-account-statement
     accounts/accounts-map
-    (fn/get-json-param request "account-number")
-    (fn/get-json-param request "begin-date")
-    (fn/get-json-param request "end-date")))    
+    (fn/get-json-param request constants/account-number-param)
+    (fn/get-json-param request constants/begin-date-param)
+    (fn/get-json-param request constants/end-date-param)))    
