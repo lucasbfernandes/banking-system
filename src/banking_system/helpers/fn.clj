@@ -84,6 +84,13 @@
   (is-date-string? date-string)
   (time-format/parse (time-format/formatters :date) date-string))
 
+(defn date-day-before
+  "Takes a date object returns another date object se to be the previous
+  day."
+  [date-object]
+  (is-date-object? date-object)
+  (time/minus date-object (time/days 1)))
+
 (defn date-string
   "Takes a date object and converts it to a human readable string.
   Format: yyyy-mm-dd."

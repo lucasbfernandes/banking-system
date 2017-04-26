@@ -10,14 +10,6 @@
     true
     (throw (Exception. (str elem " is not a integer.")))))
 
-(defn is-integer-less-or-equal?
-  "Checks whether an integer is less or equal to another. If yes, return true, if not,
-  throw Exception."
-  [a b]
-  (if (<= a b)
-    true
-    (throw (Exception. (str a " must be less or equal to " b ".")))))
-
 (defn is-number?
   "Checks whether elem is a number (i.e. integer or float). If yes, return true,
   if not, throw Exception."
@@ -25,6 +17,29 @@
   (if (or (integer? elem) (float? elem))
     true
     (throw (Exception. (str elem " is not a number.")))))
+
+(defn is-negative?
+  "Checks whether elem is negative. If yes, return true, if not, throw Exception."
+  [elem]
+  (if (and (is-number? elem) (neg? elem))
+    true
+    (throw (Exception. (str elem " is not negative.")))))
+
+(defn is-integer-less-or-equal?
+  "Checks whether an integer is less or equal to another. If yes, return true, if not,
+  throw Exception."
+  [a b]
+  (if (and (is-integer? a) (is-integer? b) (<= a b))
+    true
+    (throw (Exception. (str a " must be less or equal to " b ".")))))
+
+(defn is-pos-valid?
+  "Checks whether a position is valid inside a vector. If yes, return true,
+  if not, throw Exception."
+  [vect pos]
+  (if (and (>= pos 0) (< pos (count vect)))
+    true
+    (throw (Exception. (str pos " is not a valid position inside the collection.")))))
 
 (defn is-string?
   "Checks whether elem is a string. If yes, return true, if not, throw Exception."

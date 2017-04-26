@@ -83,7 +83,72 @@
     (catch Exception e
       (fn/retval-failure messages/MSG_0002))))
 
+(defn get-statement
+  "Returns the statement of a given position"
+  [st-map pos]
+  (is-map? st-map)
+  (is-integer? pos)
+  (is-pos-valid? (keys st-map) pos)
+  (st-map (nth (keys st-map) pos)))
+
+(defn wrap-debt-period
+  "Wraps a new debt period  based on the provided balance, begin date and
+  end date."
+  [balance begin-date end-date]
+  (is-number? balance)
+  (is-negative? balance)
+  (is-date-string? begin-date)
+  (is-date-string? end-date)
+  (is-date-before-equals? (fn/format-date begin-date) (fn/format-date end-date))
+  {:principal (* -1.0 balance)
+    :start begin-date
+    :end end-date})
+
+(defn wrap-last-debt-period
+  "Wraps the last debt period based on the provided balance and begin date."
+  [balance begin-date]
+  (is-number? balance)
+  (is-negative? balance)
+  (is-date-string? begin-date)
+  {:principal (* -1.0 balance)
+   :start begin-date})
+
+(defn insert-debt-period
+  "Receives a debt-period vector and inserts a new debt period in it."
+  [debt-vector debt-period]
+  (is-vector? debt-vector)
+  (is-map? debt-period)
+  (conj debt-vector debt-period))
+
 (defn get-periods-of-debt
- ""
- []
- (try))
+ "Returns a map with all periods of time that the account had a negative balance."
+ [accounts-map account-number begin-date end-date]
+ (try
+    (is-atom-map? accounts-map)
+    (is-integer-string? account-number)
+    (is-date-string? begin-date)
+    (is-date-string? end-date)
+    (is-account-inside-map? account-number accounts-map)
+    (is-date-before-equals? (fn/format-date begin-date) (fn/format-date end-date))
+    (let [st-map ((get-account-statement accounts-map account-number begin-date end-date) :statement)
+          keys-len (count (keys st-map))]
+      (loop [pos 0 debt-vector []]
+        (if (= pos keys-len)
+          (fn/wrap-retval-success debt-vector :debt-periods)
+          (let [current-statement (get-statement st-map pos)
+                current-balance (current-statement :balance)]
+            (if (neg? current-balance)
+              (if (< pos (dec keys-len))
+                (recur (inc pos) (insert-debt-period
+                                   debt-vector
+                                   (wrap-debt-period current-balance (nth (keys st-map) pos)
+                                     (fn/date-string (fn/date-day-before 
+                                                  (fn/format-date (nth (keys st-map) (inc pos))))))))
+                (recur (inc pos) (insert-debt-period
+                                   debt-vector
+                                   (wrap-last-debt-period
+                                     current-balance
+                                     (nth (keys st-map) pos)))))
+              (recur (inc pos) debt-vector))))))
+    (catch Exception e
+      (fn/retval-failure (.getMessage e)))))
