@@ -65,6 +65,7 @@
     (is-date-string? begin-date)
     (is-date-string? end-date)
     (is-account-inside-map? account-number accounts-map)
+    (is-date-before-equals? (fn/format-date begin-date) (fn/format-date end-date))
     (loop [pos 0 statements-map {}]
       (let [operations @(get-operations accounts-map account-number)]
         (if (or (empty? operations) (= pos (count operations)))
