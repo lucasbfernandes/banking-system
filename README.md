@@ -4,7 +4,7 @@ HTTP server that exposes 6 endpoints that allow users to create accounts, insert
 
 This project does not implement any databases or authentication steps. It assumes that users were already authenticated while communicating with it.
 
-Future work would be refine some unit tests, error handling, do some function optimizations and enable HTTPS.
+Future work would be refine some unit tests and error handling, do some function optimizations and enable HTTPS.
 
 ## Installation
 
@@ -62,18 +62,50 @@ This project offers 6 endpoints for you to interact with the banking system. The
 
 #### Account creation:
 
-**URL**: /account/create  
+**URL**: /account/create
+
 **JSON input:**
 ```json
 {
   "name": "Name",
   "email": "email@email.com"
 }
+
+```
+**JSON return:**
+```json
+{
+  "status": true,
+  "message": "Operation was successful.",
+  "account-number": "161546"
+}
 ```
 
-#### Debit operation (Put money):
+#### Debit operation (Take money):
 
-**URL**: /account/debit  
+**URL**: /account/debit
+
+**JSON input:**
+```json
+{
+  "account-number": "123456",
+  "description": "description",
+  "amount": "1000.0",
+  "date": "2017-02-09"
+}
+```
+**JSON return:**
+```json
+{
+  "status": true,
+  "message": "Operation was successful."
+}
+```
+
+#### Credit operation (Put money):
+
+**URL**: /account/credit
+
 **JSON input:**
 ```json
 {
@@ -84,22 +116,18 @@ This project offers 6 endpoints for you to interact with the banking system. The
 }
 ```
 
-#### Credit operation (Take money):
-
-**URL**: /account/credit  
-**JSON input:**
+**JSON return:**
 ```json
 {
-  "account-number": "123456",
-  "description": "description",
-  "amount": "1000.0",
-  "date": "2017-02-09"
+  "status": true,
+  "message": "Operation was successful."
 }
 ```
 
 #### Current balance operation:
 
-**URL**: /account/balance  
+**URL**: /account/balance
+
 **JSON input:**
 ```json
 {
@@ -107,31 +135,88 @@ This project offers 6 endpoints for you to interact with the banking system. The
 }
 ```
 
-#### Statement operation (Take money):
+**JSON return:**
+```json
+{
+  "status": true,
+  "message": "Operation was successful.",
+  "balance": 75.0
+}
+```
 
-**URL**: /account/statement  
+#### Statement operation:
+
+**URL**: /account/statement
+
 **JSON input:**
 ```json
 {
   "account-number": "123456",
   "begin-date": "2017-03-05",
-  "end-date": "2017-03-25"
+  "end-date": "2017-08-25"
+}
+```
+
+**JSON return:**
+```json
+{
+  "status": true,
+  "message": "Operation was successful.",
+  "statement": {
+    "2017-05-08": {
+      "balance": 1600,
+      "operations": [
+        {
+          "description": "description",
+          "amount": 800,
+          "type": "C"
+        },
+        {
+          "description": "description",
+          "amount": 800,
+          "type": "C"
+        }
+      ]
+    }
+  }
 }
 ```
 
 #### Debt periods operation:
 
-**URL**: /account/debt  
+**URL**: /account/debt
+
 **JSON input:**
 ```json
 {
   "account-number": "123456",
   "begin-date": "2017-03-05",
-  "end-date": "2017-03-25"
+  "end-date": "2017-08-25"
 }
 ```
 
-Note that values must be in the correct form, otherwise the service will return failure. 
+**JSON return:**
+```json
+{
+  "status": true,
+  "message": "Operation was successful.",
+  "debt-periods": [
+    {
+      "principal": 1400,
+      "start": "2017-05-10"
+    }
+  ]
+}
+```
+
+Note that values must be in the correct form, otherwise the service will return failure: 
+
+```json
+{
+  "status": false,
+  "message": "Invalid parameters."
+}
+```
 
 ## License
 
