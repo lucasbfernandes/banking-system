@@ -41,6 +41,8 @@
   "Takes two operations as parameters and checks whether the
   first one comes before the second in regards to their date."
   [a b]
+  (is-map? a)
+  (is-map? b)
   (fn/date-before? (a :date) (b :date)))
 
 (defn insert-operation
