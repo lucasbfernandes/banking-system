@@ -12,7 +12,7 @@ You should see:
 
     $ /usr/bin/javac
 
-If not, you must install it. You can find more information regarding the installation [here](http://www.oracle.com/technetwork/java/javase/downloads/index.html). After you install it, you will need a Clojure build tool called [Leiningen](https://leiningen.org/). In order to have it installed, please type the following commands:
+If not, you must install it. You can find more information regarding the installation [here](http://www.oracle.com/technetwork/java/javase/downloads/index.html). After you install it, you will need a Clojure build tool called [Leiningen](https://leiningen.org/). You can have it installed by typing the following commands:
 
     $ mkdir -p ~/bin
     $ cd ~/bin
@@ -27,25 +27,29 @@ If you see an output, you are ready to go!
 
 ## Usage
 
-FIXME: explanation
+First of all, you need to have this project in your machine. Please type:
 
-    $ java -jar banking-system-0.1.0-standalone.jar [args]
+    $ git clone https://github.com/lucasbfernandes/banking-system.git
 
-## Options
+And:
 
-FIXME: listing of options this app accepts.
+    $ cd banking-system/
+
+This is the root of the project and the place you need to be in order to have it running. You can start to interact with it by typing:
+
+    $ lein run 9000
+
+This will start an HTTP web server running on your localhost on port 9000. You can change it if you want to.
+
+It is important to say that this project does not have HTML visualization. Therefore you must interact with it using tools such as [Postman](https://www.getpostman.com/).
+
+You can also run Unit Tests by typing:
+
+    $ lein test
 
 ## Examples
 
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+This project offers 6 endpoints for you to interact with the Bank.
 
 ## License
 
