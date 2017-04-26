@@ -7,15 +7,15 @@
 
 (deftest wrap-operation-test
   (testing "account contains correct account-number"
-    (is (= ((wrap-operation 123456 "description" 2000 "2016-04-04" "D") :account-number) 123456)))
+    (is (= ((wrap-operation "123456" "description" 2000 "2016-04-04" "D") :account-number) "123456")))
   (testing "account contains correct description"
-    (is (= ((wrap-operation 123456 "description" 2000 "2016-04-04" "D") :description) "description")))
+    (is (= ((wrap-operation "123456" "description" 2000 "2016-04-04" "D") :description) "description")))
   (testing "account contains correct amount"
-    (is (= ((wrap-operation 123456 "description" 2000 "2016-04-04" "D") :amount) 2000)))
+    (is (= ((wrap-operation "123456" "description" 2000 "2016-04-04" "D") :amount) 2000)))
   (testing "account contains correct date"
-    (is (date-equals? ((wrap-operation 123456 "description" 2000 "2016-04-04" "D") :date) (format-date "2016-04-04"))))
+    (is (date-equals? ((wrap-operation "123456" "description" 2000 "2016-04-04" "D") :date) (format-date "2016-04-04"))))
   (testing "account contains correct type"
-    (is (= ((wrap-operation 123456 "description" 2000 "2016-04-04" "D") :type) "D"))))
+    (is (= ((wrap-operation "123456" "description" 2000 "2016-04-04" "D") :type) "D"))))
 
 (deftest get-operations-test
   (testing "illegal date string arguments"
@@ -31,7 +31,7 @@
   (testing "illegal arguments - accounts-map must me an atom map"
     (is (thrown? Exception (get-operations (atom []) "aaaaa"))))
   (testing "operations key will be returned if atom has it"
-    (is (not (nil? (get-operations (atom {123456 {:operations []}}) 123456))))))
+    (is (not (nil? (get-operations (atom {"123456" {:operations []}}) "123456"))))))
 
 (deftest get-operation-amount-test
   (testing "illegal date string arguments"
@@ -59,15 +59,15 @@
   (testing "illegal regular string parameters"
     (is (thrown? Exception (insert-operation "ABCD" "ABCD" "ABCD"))))
   (testing "illegal arguments - operation should be a map"
-    (is (thrown? Exception (insert-operation 123455 (atom {}) 134456))))
-  (testing "illegal arguments - account-number should be a integer"
-    (is (thrown? Exception (insert-operation (wrap-operation 123 "a" 20 "2017-03-04" "D") (atom {}) "test"))))
+    (is (thrown? Exception (insert-operation "123455" (atom {}) 134456))))
+  (testing "illegal arguments - account-number should be a integer string"
+    (is (thrown? Exception (insert-operation (wrap-operation "123456" "a" 20 "2017-03-04" "D") (atom {}) "1234aaa"))))
   (testing "illegal arguments - accounts-map should be an atom"
-    (is (thrown? Exception (insert-operation (wrap-operation 123 "a" 20 "2017-03-04" "D") {} 123456))))
+    (is (thrown? Exception (insert-operation (wrap-operation "123456" "description" 20 "2017-03-04" "D") {} "123456"))))
   (testing "operation is now inside the map atom"
-    (is (false? (empty? @((@(insert-operation (wrap-operation 123234 "a" 20 "2017-03-04" "D")
-                                              (atom {123234 (wrap-account "test" "test@test.com")})
-                                              123234) 123234) :operations))))))
+    (is (false? (empty? @((@(insert-operation (wrap-operation "123456" "description" 20 "2017-03-04" "D")
+                                              (atom {"123456" (wrap-account "test" "test@test.com")})
+                                              "123456") "123456") :operations))))))
 
 (deftest create-operation-test
   (testing "illegal nil arguments"
@@ -78,17 +78,17 @@
     (is (false? ((create-operation 2017.2 2017 2000 2017.2 2017 2000) :status))))
   (testing "illegal regular string parameters"
     (is (false? ((create-operation "ABCD" "ABCD" "DCBA" "ABCD" "ABCD" "DCBA") :status))))
-  (testing "illegal arguments - account-number should be an integer"
-    (is (false? ((create-operation (atom {}) "test" "test" 200 "2017-02-03" "D") :status))))
+  (testing "illegal arguments - account-number should be an integer string"
+    (is (false? ((create-operation (atom {}) "1234a" "test" 200 "2017-02-03" "D") :status))))
   (testing "illegal arguments - description should be a string"
-    (is (false? ((create-operation (atom {}) 123456 12.2 2000 "2016-03-04" "D") :status))))
+    (is (false? ((create-operation (atom {}) "123456" 12.2 2000 "2016-03-04" "D") :status))))
   (testing "illegal arguments - amount should be a float"
-    (is (false? ((create-operation (atom {}) 123456 "test" "test" "2017-02-03" "D") :status))))
+    (is (false? ((create-operation (atom {}) "123456" "test" "test" "2017-02-03" "D") :status))))
   (testing "illegal arguments - date should be a string"
-    (is (false? ((create-operation (atom {}) 123456 "test" 2000 2 "D") :status))))
+    (is (false? ((create-operation (atom {}) "123456" "test" 2000 2 "D") :status))))
   (testing "illegal arguments - type should be a string"
-    (is (false? ((create-operation (atom {}) 123456 "test" 2000 "2017-02-03" 22) :status))))
+    (is (false? ((create-operation (atom {}) "123456" "test" 2000 "2017-02-03" 22) :status))))
   (testing "illegal arguments - atom must have account number"
-    (is (false? ((create-operation (atom {234506 (wrap-account "test" "test@test.com")}) 123456 "test" 2000 "2017-02-03" "D") :status))))
+    (is (false? ((create-operation (atom {"234506" (wrap-account "test" "test@test.com")}) "123456" "test" 2000 "2017-02-03" "D") :status))))
   (testing "operation is created"
-    (is (true? ((create-operation (atom {123456 (wrap-account "test" "test@test.com")}) 123456 "test" 3000 "2017-03-03" "D") :status)))))
+    (is (true? ((create-operation (atom {"123456" (wrap-account "test" "test@test.com")}) "123456" "test" 3000 "2017-03-03" "D") :status)))))
