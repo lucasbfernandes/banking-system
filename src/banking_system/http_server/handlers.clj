@@ -38,4 +38,11 @@
     accounts/accounts-map
     (fn/get-json-param request constants/account-number-param)
     (fn/get-json-param request constants/begin-date-param)
-    (fn/get-json-param request constants/end-date-param)))    
+    (fn/get-json-param request constants/end-date-param)))
+
+(defn account-debt [request]
+  (statements/get-debt-periods
+    accounts/accounts-map
+    (fn/get-json-param request constants/account-number-param)
+    (fn/get-json-param request constants/begin-date-param)
+    (fn/get-json-param request constants/end-date-param)))

@@ -22,7 +22,7 @@
     (is (= (nth (insert-sorted [1 2 6 7] 5 <) 2) 5)))
   (testing "insert with custom function"
     (is (= (nth (insert-sorted [(format-date "2017-02-03") (format-date "2017-03-04")] 
-    	                       (format-date "2017-02-04") date-before?) 1) 
+                                (format-date "2017-02-04") date-before?) 1) 
            (format-date "2017-02-04")))))
 
 (deftest date-equals-test
@@ -39,7 +39,7 @@
   (testing "valid arguments false assertion"
     (is (false? (date-equals? (format-date "2017-03-04") (format-date "2017-05-06")))))
   (testing "valid arguments valid assertion"
-  	(is (true? (date-equals? (format-date "2017-03-04") (format-date "2017-03-04"))))))
+    (is (true? (date-equals? (format-date "2017-03-04") (format-date "2017-03-04"))))))
 
 (deftest date-before-test
   (testing "illegal date string arguments"
@@ -91,7 +91,7 @@
   (testing "illegal combination of date object/date string"
     (is (thrown? Exception (is-date-between? "2012-02-03" "2017-03-03" (format-date "2017-03-03")))))
   (testing "date begin must come before date end"
-  	(is (thrown? Exception (is-date-between? (format-date "2017-02-02") (format-date "2017-02-02") (format-date "2017-02-01")))))
+    (is (thrown? Exception (is-date-between? (format-date "2017-02-02") (format-date "2017-02-02") (format-date "2017-02-01")))))
   (testing "valid arguments false assertion"
     (is (false? (is-date-between? (format-date "2017-08-04") (format-date "2017-05-01") (format-date "2017-05-03")))))
   (testing "valid arguments valid assertion"

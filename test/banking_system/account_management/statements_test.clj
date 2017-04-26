@@ -185,3 +185,4 @@
                                   "2016-02-02"
                                   "2017-01-06") :debt-periods) 0)]
           (and (= (debt-period :start) "2017-01-01") (= (debt-period :end) "2017-01-04"))))))
+

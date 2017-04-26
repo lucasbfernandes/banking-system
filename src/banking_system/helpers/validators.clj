@@ -131,5 +131,3 @@
     true
     (throw (Exception. (str "Account " account-number " is not inside the map.")))))
 
-
-

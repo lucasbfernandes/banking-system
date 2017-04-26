@@ -22,7 +22,10 @@
     (response (handlers/account-balance request)))
 
   (POST endpoints/account-statement request
-    (response (handlers/account-statement request))))
+    (response (handlers/account-statement request)))
+
+  (POST endpoints/account-debt request
+    (response (handlers/account-debt request))))
 
 (def app-routes
   (-> routes

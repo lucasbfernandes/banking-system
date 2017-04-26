@@ -9,3 +9,5 @@
 (def account-balance "/account/balance")
 
 (def account-statement "/account/statement")
+
+(def account-debt "/account/debt")

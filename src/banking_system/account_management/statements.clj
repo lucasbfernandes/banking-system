@@ -151,4 +151,4 @@
                                      (nth (keys st-map) pos)))))
               (recur (inc pos) debt-vector))))))
     (catch Exception e
-      (fn/retval-failure (.getMessage e)))))
+      (fn/retval-failure messages/MSG_0002))))
