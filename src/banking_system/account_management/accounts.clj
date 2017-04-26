@@ -23,9 +23,9 @@
   "Generates a random account number that is not assigned to a user yet."
   [accounts-map]
   (is-atom-map? accounts-map)
-  (let [account-number (str (+ 100000 (rand-int 900000)))]
+  (loop [account-number (str (fn/get-random-between 100000 999999))]
     (if (contains? @accounts-map account-number)
-      (generate-account-number accounts-map)
+      (recur (str (fn/get-random-between 100000 999999)))
       account-number)))
 
 (defn generate-dummy-accounts-map
