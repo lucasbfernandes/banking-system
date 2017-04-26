@@ -220,7 +220,7 @@ Note that values must be in the correct form, otherwise the service will return 
 
 ## License
 
-Copyright © 2017 FIXME
+Copyright © 2017
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
