@@ -1,6 +1,10 @@
 # banking-system
 
-FIXME: description
+HTTP server that exposes 6 endpoints that allow users to create accounts, insert operations (Take or put money), get current account balance, generate account statements with configurable periods of time and get periods of time where an account had negative balance.
+
+This project does not implement any databases or authentication steps. It assumes that users were already authenticated while communicating with it.
+
+Future work would be refine some unit tests, error handling, do some function optimizations and enable HTTPS.
 
 ## Installation
 
@@ -39,7 +43,12 @@ This is the root of the project and the place you need to be in order to have it
 
     $ lein run 9000
 
-This will start an HTTP web server running on your localhost on port 9000. You can change it if you want to.
+This will start an HTTP web server running on your localhost on port 9000. You can change it if you want to. You can also generate a jar and run it by:
+
+    $ lein compile
+    $ lein uberjar
+    $ cd target/uberjar
+    $ java -jar banking-system-0.1.0-SNAPSHOT-standalone.jar 9000
 
 It is important to say that this project does not have HTML visualization. Therefore you must interact with it using tools such as [Postman](https://www.getpostman.com/).
 
@@ -47,9 +56,82 @@ You can also run Unit Tests by typing:
 
     $ lein test
 
-## Examples
+## Specs
 
-This project offers 6 endpoints for you to interact with the Bank.
+This project offers 6 endpoints for you to interact with the banking system. They are:
+
+#### Account creation:
+
+**URL**: /account/create  
+**JSON input:**
+```json
+{
+  "name": "Name",
+  "email": "email@email.com"
+}
+```
+
+#### Debit operation (Put money):
+
+**URL**: /account/debit  
+**JSON input:**
+```json
+{
+  "account-number": "123456",
+  "description": "description",
+  "amount": "1000.0",
+  "date": "2017-02-09"
+}
+```
+
+#### Credit operation (Take money):
+
+**URL**: /account/credit  
+**JSON input:**
+```json
+{
+  "account-number": "123456",
+  "description": "description",
+  "amount": "1000.0",
+  "date": "2017-02-09"
+}
+```
+
+#### Current balance operation:
+
+**URL**: /account/balance  
+**JSON input:**
+```json
+{
+  "account-number": "123456"
+}
+```
+
+#### Statement operation (Take money):
+
+**URL**: /account/statement  
+**JSON input:**
+```json
+{
+  "account-number": "123456",
+  "begin-date": "2017-03-05",
+  "end-date": "2017-03-25"
+}
+```
+
+#### Debt periods operation:
+
+**URL**: /account/debt  
+**JSON input:**
+```json
+{
+  "account-number": "123456",
+  "begin-date": "2017-03-05",
+  "end-date": "2017-03-25"
+}
+```
+
+Note that values must be in the correct form, otherwise the service will return failure. 
 
 ## License
 
